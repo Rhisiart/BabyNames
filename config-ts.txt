@@ -1,0 +1,11 @@
+git init
+npm init -y
+npm add typescript -D
+npx tsc --init
+npm add express
+npm add @types/express -D
+npx tsc
+npm add tsc-node-dev -D
+
+package.json
+	-"start": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/server.ts" 
