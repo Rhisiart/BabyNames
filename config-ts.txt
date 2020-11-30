@@ -9,3 +9,13 @@ npm add tsc-node-dev -D
 
 package.json
 	-"start": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/server.ts" 
+
+
+echo "# BabyNames" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/Rhisiart/BabyNames.git
+git push -u origin main
+                

@@ -74,14 +74,14 @@ export const getYears = async () : Promise<Error | Array<IStateNames>> => {
     return await PromiseQueriesFromStateTable(query);
 }
 
-export const getMaleBabieByStateAndYear = async (state: string, year : number) : Promise<Error | Array<IStateNames>> => {
-    const query = 'SELECT sum(count) as Count FROM StateNames where state = ? and Year= ? and Gender = ?';
-    return await PromiseQueriesFromStateTableWithPlaceholder(query, [state, year.toString(), 'M']);
+export const getMaleBabie = async () : Promise<Error | Array<IStateNames>> => {
+    const query = 'Select count, year, state FROM StateNames WHERE gender = ? ORDER BY State';
+    return await PromiseQueriesFromStateTableWithPlaceholder(query,'M');
 }
 
-export const getFemaleBabieByStateAndYear = async (state: string, year : number) : Promise<Error | Array<IStateNames>> => {
-    const query = 'SELECT sum(count) as Count FROM StateNames where state = ? and Year= ? and Gender = ?';
-    return await PromiseQueriesFromStateTableWithPlaceholder(query, [state, year.toString(), 'F']);
+export const getFemaleBabie = async () : Promise<Error | Array<IStateNames>> => {
+    const query = 'Select count, year, state FROM StateNames WHERE gender = ? ORDER BY State';
+    return await PromiseQueriesFromStateTableWithPlaceholder(query, 'F');
 }
     
 const PromiseQueriesFromNationalTable = (query: string) : Promise<Error | Array<INationalNames>> => 

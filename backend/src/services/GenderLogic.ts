@@ -1,4 +1,3 @@
-import { getMaleBabieByStateAndYear, getFemaleBabieByStateAndYear } from "../controllers/queries";
 import IStateNames from "../models/StateNames";
 
 interface IGenderRatio{
@@ -11,46 +10,57 @@ interface IGenderRatioList{
     [key : string] : Array<IGenderRatio>;
 }
 
-export const GenderRatio = async (listState : Array<IStateNames>, listYears : Array<IStateNames>) : Promise<IGenderRatioList> => {
-    const returnObj : IGenderRatioList = {};
+interface IResponse{
+    'stateGenderRatio': IGenderRatioList;
+    'minYear': number;
+    'maxYear': number;
+}
+
+export const GenderRatio = (listState : Array<IStateNames>, listYears : Array<IStateNames>, maleList : Array<IStateNames> , femaleList : Array<IStateNames>) : IResponse => {
+    const stateGenderRatio : IGenderRatioList = {};
 
     for(const state of listState)
     {
         if(state.State){
-            try{
-                let obj = await GenderRatioByState(listYears, state.State);
-                returnObj[state.State] = obj;
-            }catch(error){
-                 throw new Error(error);
-            }
+          
+            let obj =  GenderRatioByState(listYears, maleList.filter(x => x.State === state.State),  femaleList.filter(x => x.State === state.State));
+            stateGenderRatio[state.State] = obj;
         }
     }
 
-    return returnObj;
+    return {
+        'stateGenderRatio' : stateGenderRatio,
+        'minYear': listYears[0].Year,
+        'maxYear': listYears[listYears.length - 1].Year
+    };
 }
 
-const GenderRatioByState = async (listYears : Array<IStateNames>, state: string) : Promise<Array<IGenderRatio>> => {
+const GenderRatioByState = (listYears : Array<IStateNames>, maleList : Array<IStateNames> , femaleList : Array<IStateNames>) : Array<IGenderRatio> => {
     const list :  Array<IGenderRatio> = [];
 
     for(const year of listYears)
     {
         if(year.Year){
-            try{
-                const maleBabie = await getMaleBabieByStateAndYear(state, year.Year);
-                const femaleBabie = await getFemaleBabieByStateAndYear(state, year.Year);
-    
-                if(Array.isArray(maleBabie) &&  Array.isArray(femaleBabie))
-                {
-                    if(maleBabie[0].Count && femaleBabie[0].Count){
-                        let totalBabies = maleBabie[0].Count + femaleBabie[0].Count;
-                        list.push({'Male': (maleBabie[0].Count*100)/totalBabies,'Female': (femaleBabie[0].Count*100)/totalBabies, 'year': year.Year});
-                    }
-                }
-            }catch(error){
-                throw new Error(error);
-            }
+            let statePercentage = totalBabieSByYear(maleList.filter(x => x.Year === year.Year), femaleList.filter(x => x.Year === year.Year), year.Year);
+            list.push(statePercentage);
         }
     }
 
     return list;
+}
+
+const totalBabieSByYear = (maleList : Array<IStateNames> , femaleList : Array<IStateNames>, year: number) : IGenderRatio => {
+    let total = 0, totalMale = 0, totalFemale = 0;
+
+    for(const babie of maleList){
+        total += babie.Count;
+        totalMale += babie.Count;
+    }
+
+    for(const babie of femaleList){
+        total += babie.Count;
+        totalFemale += babie.Count;
+    }
+
+    return {'Male': (totalMale*100)/total,'Female': (totalFemale*100)/total, 'year': year};
 }

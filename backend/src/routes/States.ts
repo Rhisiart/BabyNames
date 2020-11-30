@@ -1,5 +1,5 @@
 import Routes from 'express';
-import {getPopulationByYearFromState, getStatePopulationOverTime, getBabiesBornByState, getAllNames, getBabiesByName, getState, getYears, getAllNamesByYear} from '../controllers/queries';
+import {getPopulationByYearFromState, getStatePopulationOverTime, getBabiesBornByState, getAllNames, getBabiesByName, getState, getYears, getAllNamesByYear, getMaleBabie, getFemaleBabie} from '../controllers/queries';
 import IStateNames from '../models/StateNames';
 import { ForNameGetStateTrendsetters} from '../services/BusinessLogic';
 import {ClusterState} from '../services/ClusterLogic';
@@ -60,10 +60,21 @@ export const getGenderRatioBirth = route.get('/genderratio', async (req, res) =>
     try{
         const listState = await getState();
         const listYears = await getYears();
+        const maleList = await getMaleBabie();
+        const femaleList = await getFemaleBabie();
 
-        const gender = Array.isArray(listState) &&  Array.isArray(listYears) ? await GenderRatio(listState, listYears) : listYears ;
+        const gender = Array.isArray(listState) &&  Array.isArray(listYears) && Array.isArray(maleList) && Array.isArray(femaleList) ? await GenderRatio(listState, listYears, maleList, femaleList) : listYears ;
 
         return res.status(200).json(gender);
+    }catch(error){
+        return res.status(404).json({'error' : error});
+    }
+});
+
+export const postTest = route.post('/test', async (req, res) => {
+    try{
+        const states = await getState();
+        return res.status(200).json({'states': states});
     }catch(error){
         return res.status(404).json({'error' : error});
     }
