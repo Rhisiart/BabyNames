@@ -8,6 +8,14 @@ export const GenderRatio = async () => {
     }
 }
 
+export const GetTendency = async () => {
+    try{
+        return await httpClient.get('national/tendency/2015');
+    }catch(err){
+        console.log(err);
+    }
+}
+
 export const Teste = async () => {
     try{
         return await httpClient.post('states/test');

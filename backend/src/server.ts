@@ -10,7 +10,8 @@ dotenv.config();
 //sqlite.verbose();
 
 const port = Number(process.env.PORT) || 2000;
-const hostname = '192.168.1.68';
+
+const hostname = process.env.IP;
 
 export const db = new sqlite.Database(process.env.db_path!, (err) => {
     console.log(err ? 'Fail to connect to db' : 'Connected to db');
@@ -37,7 +38,7 @@ app.use('/api/states', postTest);
     console.log(queryString);
 });*/
 
-app.listen(port, hostname, () => {
+app.listen(port, hostname!, () => {
     console.log(`server running http://${hostname}:${port}`)
 });
 //db.close()
