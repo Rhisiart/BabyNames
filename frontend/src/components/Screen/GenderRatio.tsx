@@ -23,7 +23,7 @@ const GenderRatioScreen : React.FC = () => {
     const [isLoading, setLoading] = useState<boolean>(false);
     const [minYear,setMinYear] = useState<Number>();
     const [maxYear,setMaxYear] = useState<Number>();
-    const [stateArray,setStateArray] = useState<Array<IResponse>>([]);
+    const [stateArray,setStateArray] = useState<IResponse>();
 
     const processData = async () => {
         try{
@@ -31,10 +31,15 @@ const GenderRatioScreen : React.FC = () => {
 
             if(response && response.data)
             {
-                console.log(response.data);
-                setLoading(true);
-                setStateArray(stateArray);
-                console.log(stateArray);
+                const responseData : IResponse = response.data;
+                if(responseData.maxYear && responseData.minYear && responseData.stateGenderRatio){
+                    console.log(responseData.minYear);
+                    setLoading(true);
+                    setStateArray(responseData);
+                    setMinYear(responseData.minYear);
+                    setMaxYear(responseData.maxYear);
+                }
+                
             }
         }catch(err){
             console.log(err);
@@ -46,7 +51,7 @@ const GenderRatioScreen : React.FC = () => {
 
     return(
         <View>
-            {isLoading ? <Text>Loaded</Text> : <Text>Loading</Text>}
+            {isLoading ? <View> <Text>{minYear}</Text> <Text>{maxYear}</Text> <Text>{stateArray}</Text> </View>  : <Text>Loading</Text>}
         </View>
     );
 }
