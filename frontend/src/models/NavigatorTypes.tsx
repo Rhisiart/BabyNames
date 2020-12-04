@@ -4,6 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 export type RootStackParamList = {
     Home : undefined,
     GenderRatio: undefined
+    GetTendency: undefined
 }
 /*
 type GenderRatioScreenNavigationProp = StackNavigationProp<RootStackParamList,'GenderRatio'>;
