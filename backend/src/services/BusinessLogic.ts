@@ -93,7 +93,7 @@ export const getPhoneticTrends = (listNames: Array<INationalNames>): Array<IPhon
         })
     });
 
-    return listPhoneticTrends.sort((a, b) => b.count - a.count);
+    return listPhoneticTrends.sort((a, b) => b.count - a.count).slice(0, 5);
 }
 
 export const getAmericanSoundex = (listNames: Array<INationalNames>): Array<IPhoneticTrends> => {
@@ -158,7 +158,7 @@ export const getAmericanSoundex = (listNames: Array<INationalNames>): Array<IPho
         }
     });
 
-    return listPhoneticTrends.sort((a, b) => b.count - a.count);
+    return listPhoneticTrends.sort((a, b) => b.count - a.count).slice(0, 5);
 }
 
 export const getHammingDistance = (listNames: Array<INationalNames>, name: string): string[] => {

@@ -3,8 +3,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 export type RootStackParamList = {
     Home : undefined,
-    GenderRatio: undefined
-    GetTendency: undefined
+    GenderRatio: undefined,
+    GetTendency: undefined,
+    PhoneticTrend: undefined,
+    AmericanSoundex: undefined,
+    HammingDistance: undefined,    
+    BirthsFromTo: undefined
 }
 /*
 type GenderRatioScreenNavigationProp = StackNavigationProp<RootStackParamList,'GenderRatio'>;
