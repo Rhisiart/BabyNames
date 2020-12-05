@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
-import { GetTendency } from '../../api/HttpRequests';
+import { StyleSheet, Text, View } from 'react-native';
+import { GetPhoneticTrend } from '../../api/HttpRequests';
+import styles from '../../css/styles';
 
-interface ITendency {
-    'name': string;
-    'prediction_born': number;
+interface IPhonetic {
+    'phonetic': string;
+    'names': string[];
+    'count': number;
 }
 
 interface IResponse {
-    'popular_names': ITendency[]
+    'phonetic_trends': IPhonetic[]
 }
 
-const GetTendencyScreen : React.FC = () => {
+const PhoneticTrend : React.FC = () => {
     const [isLoading, setLoading] = useState<boolean>(false);
     const [stateArray, setStateArray] = useState<IResponse>();
 
     const processData = async () => {
         try{
-            const response = await GetTendency("2015");
+            const response = await GetPhoneticTrend("2000");
 
             if(response && response.data)
             {
@@ -36,14 +38,12 @@ const GetTendencyScreen : React.FC = () => {
     useEffect(() => {
         processData()},[]);
 
-
-        
     return(
         <View>
             {isLoading ?
                 <View>
-                    {stateArray?.popular_names.map((element) => 
-                        <Text  key={element.name}>Name {element.name} com {element.prediction_born} nascidos</Text> 
+                    {stateArray?.phonetic_trends.map((element) => 
+                        <Text style={styles.bigBlue} key={element.phonetic}>Phonetic: {element.phonetic} com {element.count} nascidos</Text> 
                     )}
                 </View>
                 : <Text>Loading</Text>}
@@ -52,4 +52,4 @@ const GetTendencyScreen : React.FC = () => {
 }
 
 
-export default GetTendencyScreen;
+export default PhoneticTrend;
