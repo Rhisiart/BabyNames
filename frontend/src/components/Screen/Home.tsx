@@ -4,7 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Props } from '../../models/NavigatorTypes';
 import styles from '../../css/styles'
 
-const HomeScreen : React.FC<Props>  = ({navigation} : Props) => {
+const HomeScreen : React.FC<Props>  = ({navigation}) => {
     return(
         <View style={styles.menuView}>
             <View style={styles.button}>

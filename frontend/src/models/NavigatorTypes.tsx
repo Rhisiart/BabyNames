@@ -1,5 +1,6 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import {DrawerNavigationProp } from '@react-navigation/drawer';
 
 export type RootStackParamList = {
     Home : undefined,
@@ -27,3 +28,8 @@ export type Props = {
     route: HomeScreenRouteProp;
 }
 
+type HomeDrawerNavigationProps = DrawerNavigationProp<RootStackParamList,'Home'>;
+
+export type DrawerProps = {
+    navigation: HomeDrawerNavigationProps;
+}
