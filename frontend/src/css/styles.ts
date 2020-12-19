@@ -2,11 +2,20 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
-  menuView:{
-
+  navigationMenu:{
+    backgroundColor:"black",
+    alignSelf: 'stretch',
+    textAlign: 'center',
+    height:50
   },
-  buttons: {
-    fontSize: 30
+  menuView:{
+    width: "100%",
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    width: "50%",
+    marginTop: 10,
   },
   marginTop10: {
     marginTop: 10,

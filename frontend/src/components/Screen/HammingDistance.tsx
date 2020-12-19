@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import { GetHammingDistance } from '../../api/HttpRequests';
 import styles from '../../css/styles';
 
@@ -32,6 +32,7 @@ const HammingDistance : React.FC = () => {
     useEffect(() => {
         processData()},[]);
 */
+
     return(
         <View>
             <View>
