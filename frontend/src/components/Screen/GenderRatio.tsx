@@ -14,6 +14,10 @@ interface IGenderRatioList{
     [key : string] : Array<IGenderRatio>;
 }
 
+interface IColor{
+    [key : string] : string;
+}
+
 interface IResponse{
     'stateGenderRatio': IGenderRatioList;
     'minYear': number;
@@ -26,7 +30,7 @@ const GenderRatioScreen : React.FC = () => {
     const [yearToStart,setStart] = useState<number>();
     const [maxYear,setMaxYear] = useState<number>();
     const [stateArray,setStateArray] = useState<IResponse>();
-    const [color, setColor] = useState<string>('#000');
+    const [color, setColor] = useState<IColor>({'OR' : '#eee', 'WA': '#eee'});
 
     const processData = async () => {
         try{
@@ -42,7 +46,7 @@ const GenderRatioScreen : React.FC = () => {
                     setMinYear(responseData.minYear);
                     setMaxYear(responseData.maxYear);
                     setStart(startValue);
-                    yearPercentages(startValue);
+                    //yearPercentages(startValue);
                 }
                 
             }
@@ -54,27 +58,31 @@ const GenderRatioScreen : React.FC = () => {
     useEffect(() => {
         processData()},[]);
 
-    const yearPercentages = (year : number) => {
+    const yearPercentages = async (year : number) => {
+        const colors : IColor = {};
+
         if(stateArray)
         {
             for(const state in stateArray['stateGenderRatio'])
             {
                 //for now
-                if(state === 'WA')
+                if(state === 'WA' || state === 'OR' )
                 {
                     for(const percentageList of stateArray['stateGenderRatio'][state])
                     {
                         if(percentageList.year === year)
                         {
-                            let colors = percentageList.Male > percentageList.Female ? '#3990e1' : '#FFC0CB';
+                            let color = percentageList.Male > percentageList.Female ? '#3990e1' : '#FFC0CB';
                             console.log(colors);
-                            setColor(colors);
+                            console.log(state);
+                            colors[state] = color;
                         } 
                     }
                 }
             }
         }
-        
+        setColor(colors);
+        console.log(color);
     }
 
     return(
@@ -83,7 +91,7 @@ const GenderRatioScreen : React.FC = () => {
                 isLoading ? 
                 <View> 
                     <View>
-                        <UsaSvgComponent color = {color}/>
+                        <UsaSvgComponent colors = {color}/>
                     </View>
                     <View>
                         <Text> {minYear} </Text>
@@ -101,7 +109,8 @@ const GenderRatioScreen : React.FC = () => {
                             console.log("onSlidingStart()")
                             }
                             onValueChange={value =>
-                                yearPercentages(value)
+                                //yearPercentages(value)
+                                console.log(value)
                             }
                             orientation="horizontal"
                             step={1}
