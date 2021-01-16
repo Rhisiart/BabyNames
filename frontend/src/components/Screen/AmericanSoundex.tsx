@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, View, Modal, ScrollView, TextInput, Dimensions } from 'react-native';
+import { Icon } from 'react-native-elements';
 import { GetAmericanSoundex } from '../../api/HttpRequests';
+import modalStyle from '../../css/modalStyles';
 import styles from '../../css/styles';
+import {
+    LineChart,
+    BarChart,
+    PieChart,
+    ProgressChart,
+    ContributionGraph,
+    StackedBarChart
+} from "react-native-chart-kit";
+const screenWidth = Dimensions.get("window").width - 30;
 
 interface IAmericanSoundex {
     'phonetic': string;
@@ -13,47 +24,154 @@ interface IResponse {
     'phonetic_trends': IAmericanSoundex[]
 }
 
-const AmericanSoundex : React.FC = () => {
+const AmericanSoundex: React.FC = () => {
+    
+    const topColors: string[] = ["#003f5c","#58508d","#bc5090","#ff6361","#ffa600"]
+    
     const [isLoading, setLoading] = useState<boolean>(false);
     const [stateArray, setStateArray] = useState<IResponse>();
+    const [inputColor, setInputColor] = useState<string>("black");
+    const [infoMessage, setInfoMessage] = useState<string>("");
+    const [showInfo, setShowInfo] = useState<boolean>(false);
+
+    const [dataInfo, setData] = useState<{ name: string, babiesBorn: number, color: string, legendFontColor: string, legendFontSize: number }[]>([{
+        name: "",
+        babiesBorn: 0,
+        color: "#ff0000",
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+    }]);
 
     const processData = async (year: string) => {
-        
-        try{
-            console.log(year);
-            const response = await GetAmericanSoundex(year);
 
-            if(response && response.data)
-            {
-                console.log(response.data);
-                const responseData: IResponse = response.data;
+        try {
+            const digits_only = (string: any) => [...string].every(c => '0123456789'.includes(c));
 
-                setLoading(true);
-                setStateArray(responseData);
-                console.log(stateArray);
+            if (!year) {
+                setInputColor("black");
+                setLoading(false);
+                setInfoMessage("");
             }
-        }catch(err){
+            else if (!digits_only(year) || !year) {
+                console.log("Invalid");
+                setInputColor("red");
+                setLoading(false);
+                setInfoMessage("Invalid Year");
+            }
+            else {
+                setInputColor("black");
+                setInfoMessage("Loading");
+                setLoading(false);
+                const response = await GetAmericanSoundex(year);
+                setInfoMessage("Loaded");
+                setLoading(true);
+
+                if (response && response.data) {
+                    const responseData: IResponse = response.data;
+                    if (responseData.phonetic_trends.length == 0) {
+                        setLoading(false);
+                        setInfoMessage("No information for selected year");
+                    }
+                    else {
+                        //setStateArray(responseData);
+                        var dataInfoManage: { name: string, babiesBorn: number, color: string, legendFontColor: string, legendFontSize: number }[] = [];
+
+                        responseData.phonetic_trends.forEach((element, index) => {
+                            dataInfoManage.push({
+                                name: " - '" + element.phonetic + "'",
+                                babiesBorn: element.count,
+                                color:topColors[index],
+                                legendFontColor: "#7F7F7F",
+                                legendFontSize: 15
+                            })
+                        });
+
+                        setData(dataInfoManage);
+                    }
+
+                }
+                else {
+                    setLoading(false);
+                    setInfoMessage("Error getting Info Data");
+                }
+            }
+
+        } catch (err) {
             console.log(err);
         }
     }
-/*
-    useEffect(() => {
-        processData()},[]);
-*/
-    return(
-        
-        <View>
-            <View>
-                <TextInput style={{ height: 40, borderColor: 'gray', borderWidth: 1 }} onChangeText={year => processData(year)} placeholder="Choose Year"/>
+    /*
+        useEffect(() => {
+            processData()},[]);
+    */
+
+    
+   const data = dataInfo;
+
+   const chartConfig = {
+       decimalPlaces: 0,
+       backgroundGradientFrom: "#ffffff",
+       backgroundGradientFromOpacity: 0,
+       backgroundGradientTo: "#ffffff",
+       backgroundGradientToOpacity: 0.5,
+       color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+       strokeWidth: 2, // optional, default 3
+       barPercentage: 0.5,
+       useShadowColorFromDataset: false // optional
+   };
+    return (
+        <ScrollView style={{ marginLeft: 15, marginRight: 15, marginTop: 10 }}>
+            <View style={{ flexDirection: "row" }} >
+                <TextInput keyboardType="numeric" style={[styles.input, { borderColor: inputColor}]} onChangeText={year => processData(year)} placeholder="Choose Year" />
+                <View style={{ alignItems: "flex-end", marginTop: 20, marginLeft: 20 }}>
+                    <Icon
+                        onPress={() => {
+                            setShowInfo(!showInfo);
+                        }}
+                        color="#0CC"
+                        name="info"
+                        size={35}
+                        type="material"
+                    />
+                </View>
+
             </View>
             {isLoading ?
-                <View>
-                    {stateArray?.phonetic_trends.map((element) => 
-                        <Text style={styles.basicText} key={element.phonetic}>Phonetic: {element.phonetic} com {element.count} nascidos</Text> 
+                <View style={{ marginTop: 20 }}>
+                    <PieChart
+                        data={data}
+                        width={screenWidth}
+                        height={220}
+                        chartConfig={chartConfig}
+                        accessor={"babiesBorn"}
+                        backgroundColor={"transparent"}
+                        paddingLeft={"15"}
+                        absolute
+                    />
+                    {stateArray?.phonetic_trends.map((element) =>
+                    <View key={element.phonetic} style={styles.dataItem}>
+                        <Text style={styles.basicText}>Phonetic: {element.phonetic} with {element.count} born babies</Text>
+                    </View>
                     )}
                 </View>
-                : <Text>Loading</Text>}
-        </View>
+                : <Text style={{ marginTop: 20 }}>{infoMessage}</Text>}
+
+            <View style={modalStyle.centeredView} onTouchEnd={() => {
+                setShowInfo(false)
+            }}>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={showInfo}
+                >
+                    <View style={modalStyle.centeredView}>
+                        <View style={modalStyle.modalView}>
+                            <Text style={modalStyle.modalText}>For the specified year, show the top 5 phonetic American Soundex used which is a code for a name that consists of a letter followed by three numerical digits: the letter is the first letter of the name, and the digits encode the remaining consonants.</Text>
+                        </View>
+                    </View>
+                </Modal>
+            </View>
+        </ScrollView>
     );
 }
 

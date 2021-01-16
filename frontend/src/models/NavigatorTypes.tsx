@@ -32,4 +32,5 @@ type HomeDrawerNavigationProps = DrawerNavigationProp<RootStackParamList,'Home'>
 
 export type DrawerProps = {
     navigation: HomeDrawerNavigationProps;
+    title: String;
 }

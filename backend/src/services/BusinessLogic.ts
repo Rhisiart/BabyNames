@@ -41,7 +41,7 @@ export const getPercentageByYear = (listNames: Array<INationalNames>, year: numb
         if (listPrevYears.length != 1)
             mean = calcuteMeanGrowthBornBabyByName(listPrevYears);
 
-        listInfoNames.push({ name: element.Name, prediction_born: mean * element.Count });
+        listInfoNames.push({ name: element.Name, prediction_born: Math.round(mean * element.Count) });
     });
 
     return listInfoNames.sort((a, b) => b.prediction_born - a.prediction_born).slice(0, 5);
